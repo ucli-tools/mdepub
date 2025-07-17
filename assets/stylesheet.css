@@ -1,0 +1,50 @@
+/* Default styles for mdepub */
+
+/* Title Page */
+.titlepage {
+    text-align: center;
+    margin-top: 25%;
+    page-break-before: always;
+    page-break-after: always;
+}
+
+h1.title {
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+p.author {
+    font-size: 1.5em;
+    font-style: italic;
+    margin-top: 1em;
+}
+
+p.date {
+    font-size: 1em;
+    margin-top: 1em;
+}
+
+/* Part Page */
+.part-page {
+    text-align: center;
+    margin-top: 30%;
+    page-break-before: always;
+    page-break-after: always;
+}
+
+.part-page h1 {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+/* Chapter Styling */
+h1, h2, h3, h4, h5, h6 {
+    font-family: sans-serif;
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+}
+
+/* Add a page break before H1 elements (chapters) */
+h1 {
+    page-break-before: always;
+}

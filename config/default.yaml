@@ -1,0 +1,25 @@
+# =============================================================================
+# MDEPUB DEFAULT CONFIGURATION
+# All settings are top-level for simplicity.
+# =============================================================================
+
+# --- Document Processing ---
+table_of_contents: true
+toc_depth: 3
+chapter_level: 1
+
+# --- EPUB Styling ---
+stylesheet: "assets/stylesheet.css"
+lua_filter: "filters/part-filter.lua"
+cover_image: null
+
+# --- Default Metadata ---
+title: "Untitled Document"
+author: "Unknown Author"
+date: null # Set to current date if not provided
+rights: "All rights reserved."
+language: "en-US"
+
+# --- Output Configuration ---
+output_directory: "output"
+output_filename_template: "{title} - {author}"
