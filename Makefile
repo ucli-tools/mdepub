@@ -62,19 +62,17 @@ lint:
 rebuild: clean build
 
 install-system: setup
-	@echo "Installing mdepub to /opt/ucli-tools/mdepub..."
+	@echo "Installing mdepub to ~/.ucli-tools/mdepub..."
 	@# Create installation directory
-	sudo mkdir -p /opt/ucli-tools/mdepub
+	mkdir -p ~/.ucli-tools/mdepub
 	@# Copy entire project to permanent location
-	sudo cp -r . /opt/ucli-tools/mdepub/
-	@# Set proper ownership
-	sudo chown -R root:root /opt/ucli-tools/mdepub
+	cp -r . ~/.ucli-tools/mdepub/
 	@# Create system wrapper script
 	@echo '#!/bin/bash' | sudo tee /usr/local/bin/mdepub > /dev/null
 	@echo '# mdepub - System wrapper for mdepub.py' | sudo tee -a /usr/local/bin/mdepub > /dev/null
 	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
 	@echo '# Set mdepub directory (permanent installation)' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo 'MDEPUB_DIR="/opt/ucli-tools/mdepub"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo 'MDEPUB_DIR="$$HOME/.ucli-tools/mdepub"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
 	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
 	@echo '# Store current working directory' | sudo tee -a /usr/local/bin/mdepub > /dev/null
 	@echo 'ORIGINAL_CWD="$$(pwd)"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
