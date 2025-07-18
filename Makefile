@@ -56,9 +56,12 @@ lint:
 	. venv/bin/activate && isort --check-only src/ tests/
 
 # Installation and packaging
-build: setup
-	@echo "Building mdepub..."
-	. venv/bin/activate && python -c "import sys; print(f'Python {sys.version}')"
+build: install-system
+
+rebuild: clean build
+
+install-system: setup
+	@echo "Installing mdepub to /usr/local/bin..."
 	@echo "Creating executable wrapper script..."
 	@MDEPUB_DIR="$$(pwd)"; \
 	if [ ! -f "mdepub" ]; then \
@@ -93,14 +96,9 @@ build: setup
 		chmod +x mdepub; \
 		echo "Created executable wrapper: mdepub"; \
 	fi
-	@echo "mdepub build complete!"
-
-rebuild: clean build
-
-install-system:
-	@if [ ! -f "mdepub" ]; then make build; fi
-	@echo "Installing mdepub to /usr/local/bin..."
+	@# Install executable
 	sudo cp mdepub /usr/local/bin/mdepub
+	sudo chmod +x /usr/local/bin/mdepub
 	@echo "✓ mdepub installed successfully."
 	@echo "Run 'mdepub --help' to get started."
 
