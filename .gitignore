@@ -93,3 +93,6 @@ env/
 
 # mdepub specific
 output/
+
+# User-specific wrapper scripts (not the src/mdepub/ directory)
+/mdepub
