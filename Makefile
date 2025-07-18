@@ -61,44 +61,43 @@ build: install-system
 rebuild: clean build
 
 install-system: setup
-	@echo "Installing mdepub to /usr/local/bin..."
-	@echo "Creating executable wrapper script..."
-	@MDEPUB_DIR="$$(pwd)"; \
-	if [ ! -f "mdepub" ]; then \
-		echo '#!/bin/bash' > mdepub; \
-		echo '# mdepub - System wrapper for mdepub.py' >> mdepub; \
-		echo '' >> mdepub; \
-		echo '# Set mdepub directory (absolute path)' >> mdepub; \
-		echo "MDEPUB_DIR=\"$$MDEPUB_DIR\"" >> mdepub; \
-		echo '' >> mdepub; \
-		echo '# Store current working directory' >> mdepub; \
-		echo 'ORIGINAL_CWD="$$(pwd)"' >> mdepub; \
-		echo '' >> mdepub; \
-		echo '# Convert relative paths to absolute paths' >> mdepub; \
-		echo 'args=()' >> mdepub; \
-		echo 'for arg in "$$@"; do' >> mdepub; \
-		echo '    # Check if argument looks like a file path (contains . or / and doesnt start with -)' >> mdepub; \
-		echo '    if [[ "$$arg" == *.* || "$$arg" == */* ]] && [[ "$$arg" != -* ]]; then' >> mdepub; \
-		echo '        # Convert to absolute path if its relative' >> mdepub; \
-		echo '        if [[ "$$arg" != /* ]]; then' >> mdepub; \
-		echo '            args+=("$$ORIGINAL_CWD/$$arg")' >> mdepub; \
-		echo '        else' >> mdepub; \
-		echo '            args+=("$$arg")' >> mdepub; \
-		echo '        fi' >> mdepub; \
-		echo '    else' >> mdepub; \
-		echo '        args+=("$$arg")' >> mdepub; \
-		echo '    fi' >> mdepub; \
-		echo 'done' >> mdepub; \
-		echo '' >> mdepub; \
-		echo '# Activate virtual environment and execute Python script with absolute paths' >> mdepub; \
-		echo 'cd "$$MDEPUB_DIR"' >> mdepub; \
-		echo '. venv/bin/activate && python src/mdepub/cli.py "$${args[@]}" --output-dir "$$ORIGINAL_CWD"' >> mdepub; \
-		chmod +x mdepub; \
-		echo "Created executable wrapper: mdepub"; \
-	fi
-	@# Install executable
-	sudo cp mdepub /usr/local/bin/mdepub
-	sudo chmod +x /usr/local/bin/mdepub
+	@echo "Installing mdepub to /opt/ucli-tools/mdepub..."
+	@# Create installation directory
+	sudo mkdir -p /opt/ucli-tools/mdepub
+	@# Copy entire project to permanent location
+	sudo cp -r . /opt/ucli-tools/mdepub/
+	@# Set proper ownership
+	sudo chown -R root:root /opt/ucli-tools/mdepub
+	@# Create system wrapper script
+	@echo '#!/bin/bash' | sudo tee /usr/local/bin/mdepub > /dev/null
+	@echo '# mdepub - System wrapper for mdepub.py' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '# Set mdepub directory (permanent installation)' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo 'MDEPUB_DIR="/opt/ucli-tools/mdepub"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '# Store current working directory' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo 'ORIGINAL_CWD="$$(pwd)"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '# Convert relative paths to absolute paths' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo 'args=()' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo 'for arg in "$$@"; do' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '    # Check if argument looks like a file path (contains . or / and doesnt start with -)' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '    if [[ "$$arg" == *.* || "$$arg" == */* ]] && [[ "$$arg" != -* ]]; then' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '        # Convert to absolute path if its relative' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '        if [[ "$$arg" != /* ]]; then' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '            args+=("$$ORIGINAL_CWD/$$arg")' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '        else' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '            args+=("$$arg")' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '        fi' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '    else' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '        args+=("$$arg")' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '    fi' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo 'done' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '# Activate virtual environment and execute Python script with absolute paths' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo 'cd "$$MDEPUB_DIR"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '. venv/bin/activate && python src/mdepub/cli.py "$${args[@]}" --output-dir "$$ORIGINAL_CWD"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@sudo chmod +x /usr/local/bin/mdepub
 	@echo "✓ mdepub installed successfully."
 	@echo "Run 'mdepub --help' to get started."
 
