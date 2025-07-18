@@ -1,0 +1,28 @@
+#!/bin/bash
+# mdepub - System wrapper for mdepub.py
+
+# Set mdepub directory (absolute path)
+MDEPUB_DIR="/home/pcone/Documents/temp/code-25-07-17/mdepub"
+
+# Store current working directory
+ORIGINAL_CWD="$(pwd)"
+
+# Convert relative paths to absolute paths
+args=()
+for arg in "$@"; do
+    # Check if argument looks like a file path (contains . or / and doesnt start with -)
+    if [[ "$arg" == *.* || "$arg" == */* ]] && [[ "$arg" != -* ]]; then
+        # Convert to absolute path if its relative
+        if [[ "$arg" != /* ]]; then
+            args+=("$ORIGINAL_CWD/$arg")
+        else
+            args+=("$arg")
+        fi
+    else
+        args+=("$arg")
+    fi
+done
+
+# Activate virtual environment and execute Python script with absolute paths
+cd "$MDEPUB_DIR"
+. venv/bin/activate && python src/mdepub/cli.py "${args[@]}" --output-dir "$ORIGINAL_CWD"

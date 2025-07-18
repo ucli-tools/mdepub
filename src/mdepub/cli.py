@@ -1,9 +1,11 @@
 import argparse
 import os
+import sys
 import pypandoc
 import yaml
 import frontmatter
 from datetime import datetime
+from importlib import metadata
 
 def get_project_root():
     """Find the project root by looking for the setup.py file."""
@@ -56,6 +58,21 @@ def build_pandoc_args(config, project_root):
     """Build the list of extra arguments for Pandoc from the config."""
     extra_args = []
     
+    # --- Math Processing ---
+    # Use MathML for better EPUB compatibility
+    math_method = config.get('math_method', 'mathml')
+    if math_method == 'mathml':
+        extra_args.append('--mathml')
+    elif math_method == 'webtex':
+        extra_args.append('--webtex')
+    elif math_method == 'katex':
+        extra_args.append('--katex')
+    elif math_method == 'mathjax':
+        extra_args.append('--mathjax')
+    else:
+        # Default to MathML for EPUB
+        extra_args.append('--mathml')
+    
     # --- Processing Options ---
     if config.get('table_of_contents'):
         extra_args.append('--toc')
@@ -63,7 +80,8 @@ def build_pandoc_args(config, project_root):
 
     # --- EPUB Options ---
     if config.get('chapter_level'):
-        extra_args.append(f"--epub-chapter-level={config['chapter_level']}")
+        # Use --split-level instead of deprecated --epub-chapter-level
+        extra_args.append(f"--split-level={config['chapter_level']}")
     if config.get('stylesheet'):
         css_path = os.path.join(project_root, config['stylesheet'])
         if os.path.exists(css_path):
@@ -75,50 +93,84 @@ def build_pandoc_args(config, project_root):
 
     # --- Metadata ---
     # All remaining keys in the config are treated as metadata
-    known_args = ['table_of_contents', 'toc_depth', 'chapter_level', 'stylesheet', 'lua_filter', 'output_directory', 'output_filename_template']
+    known_args = ['table_of_contents', 'toc_depth', 'chapter_level', 'stylesheet', 'lua_filter', 'output_directory', 'output_filename_template', 'math_method']
     for key, value in config.items():
         if key not in known_args and value is not None:
             extra_args.append(f'--metadata={key}:{value}')
     
     return extra_args
 
-def get_output_path(config, input_path):
+def get_output_path(config, input_path, output_dir=None):
     """Determine the output path based on the configuration."""
-    output_dir = config.get('output_directory') or os.path.dirname(input_path) or '.'
+    # Use provided output_dir, then config, then current working directory
+    if output_dir:
+        output_dir = output_dir
+    elif config.get('output_directory'):
+        output_dir = config.get('output_directory')
+    else:
+        output_dir = os.getcwd()
+    
     os.makedirs(output_dir, exist_ok=True)
 
+    # Sanitize title and author for the filename
+    sanitized_config = {k: str(v).replace('/', '-') for k, v in config.items()}
+
     filename_template = config.get('output_filename_template', '{title} - {author}')
-    # All config keys are available for the template
-    filename = filename_template.format(**config) + '.epub'
+    filename = filename_template.format(**sanitized_config) + '.epub'
 
     return os.path.join(output_dir, filename)
 
-def main():
-    parser = argparse.ArgumentParser(description="Convert a Markdown file to EPUB.")
-    parser.add_argument("input_file", help="The path to the input Markdown file.")
-    args = parser.parse_args()
+def get_version():
+    """Get the version of the package."""
+    try:
+        return metadata.version('mdepub')
+    except metadata.PackageNotFoundError:
+        return "0.0.0 (local development)"
 
-    input_path = args.input_file
-    if not os.path.exists(input_path):
-        print(f"Error: Input file not found at {input_path}")
+def main():
+    # Handle --version flag manually to avoid argparse exit issues
+    if '--version' in sys.argv:
+        print(f"mdepub {get_version()}")
         return
 
-    project_root = get_project_root()
-    config, content = load_configuration(input_path, project_root)
+    parser = argparse.ArgumentParser(
+        description="A powerful, configuration-driven tool to convert Markdown documents into beautifully styled EPUB files.",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument(
+        "input_file",
+        help="The path to the input Markdown file."
+    )
+    parser.add_argument(
+        "--output-dir",
+        help="Directory where the EPUB file will be saved (defaults to current directory)"
+    )
     
+    # Check if input_file was provided
+    if len(sys.argv) < 2 or sys.argv[1].startswith('-'):
+        parser.print_help()
+        return
+
+    args = parser.parse_args()
+
+    project_root = get_project_root()
+    config, content = load_configuration(args.input_file, project_root)
+    
+    output_path = get_output_path(config, args.input_file, args.output_dir)
     extra_args = build_pandoc_args(config, project_root)
-    output_path = get_output_path(config, input_path)
 
-    print(f"Converting {input_path} to {output_path}...")
-
+    print(f"Converting {args.input_file} to {output_path}...")
     try:
         pypandoc.convert_text(
-            source=content,
-            to='epub',
+            content,
+            'epub',
             format='md',
             outputfile=output_path,
             extra_args=extra_args
         )
-        print("Conversion successful!")
+        print(f"✓ Successfully created {os.path.basename(output_path)}.")
     except Exception as e:
         print(f"An error occurred during conversion: {e}")
+
+if __name__ == "__main__":
+    main()
