@@ -175,4 +175,19 @@ mdepub/
 
 ## 📄 License
 
-This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for details.
+**This project is licensed under the Apache 2.0 License** - see the [LICENSE](LICENSE) file for details.
+
+### 🌐 Free and Open Source Software (FOSS)
+
+This universal EPUB conversion tool is part of the Universalis ecosystem's **dual licensing model**:
+
+- **🌐 This Tool (FOSS)**: Freely available under Apache 2.0 for anyone to use
+- **🔒 Particular Implementations**: Organizations may use this tool in their own projects with any licensing
+
+You are free to:
+- ✅ Use this tool for any purpose (commercial or non-commercial)
+- ✅ Modify and customize it for your needs
+- ✅ Distribute your modifications
+- ✅ Integrate it into proprietary workflows
+
+*Part of the Universalis Project - Where universal tools meet particular implementations*
