@@ -61,9 +61,8 @@ lint:
 # Installation and packaging
 rebuild: clean build
 
-install-system: setup
+install-system:
 	@echo "Installing mdepub with pipx..."
-	@# Install using pipx for isolated CLI tool installation
 	pipx install .
 	@echo "✓ mdepub installed successfully with pipx."
 	@echo "Run 'mdepub --help' to get started."
