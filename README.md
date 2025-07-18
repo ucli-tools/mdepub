@@ -41,41 +41,72 @@
 
 3.  **Build the Wrapper Script**
 
-    This creates the `mdepub` executable script that can be installed system-wide.
+    This creates the `mdepub` executable script with proper path handling:
 
     ```bash
     make build
     ```
 
-4.  **Install System-Wide (Optional)**
+4.  **Install System-Wide (Recommended)**
 
-    To make the `mdepub` command available from any directory, install it to `/usr/local/bin`.
+    To make the `mdepub` command available from any directory:
 
     ```bash
-    sudo make install-system
+    make install-system
     ```
 
-    You can uninstall it at any time with `sudo make uninstall-system`.
+    This installs the wrapper to `/usr/local/bin/mdepub`. You can uninstall it anytime with:
+
+    ```bash
+    make uninstall-system
+    ```
 
 ## 🔧 Usage
 
-Once installed system-wide, you can run `mdepub` directly on any Markdown file. The output `.epub` file will be created in your **current working directory**.
+After installation, you can use `mdepub` from any directory:
+
+### System-Wide Usage (Recommended)
+
+Once installed with `make install-system`, you can run `mdepub` from anywhere:
 
 ```bash
 # Navigate to your documents folder
 cd /path/to/my/books
 
-# Generate an EPUB from a Markdown file
-# The output will be saved in the current directory
+# Generate an EPUB - output will be saved in current directory
 mdepub my-book.md
+
+# Or specify a different output location
+mdepub my-book.md --output-dir /path/to/output
 ```
 
-If you prefer not to install it system-wide, you can run the local wrapper script from the project root:
+### Local Usage (Development)
+
+If you haven't installed system-wide, use the local wrapper:
 
 ```bash
 # From the mdepub project directory
 ./mdepub /path/to/your/document.md
+
+# The EPUB will be saved in your current working directory
 ```
+
+### Alternative: Direct Python Module
+
+```bash
+# Activate the virtual environment first
+source /path/to/mdepub/venv/bin/activate
+
+# Run the module directly
+python -m mdepub.cli my-book.md --output-dir .
+```
+
+### Important Notes
+
+- **Output Location**: By default, EPUBs are saved in your current working directory
+- **Shell Compatibility**: The wrapper works with both bash and fish shells
+- **Path Handling**: Both relative and absolute paths are supported
+- **Automatic Path Resolution**: The wrapper handles path conversion automatically
 
 ## ⚙️ Configuration
 
@@ -102,39 +133,45 @@ author: "A. U. Thor"
 
 ```
 mdepub/
-├── Makefile                 # Main automation script
-├── README.md                # This file
-├── requirements.txt         # Main dependencies
-├── requirements-dev.txt     # Development dependencies
+├── Makefile                 # Build and automation commands
+├── README.md                # This documentation
+├── requirements.txt         # Python dependencies
 ├── setup.py                 # Python package setup
+├── .gitignore              # Git ignore rules (excludes user wrappers)
 ├── src/
-│   └── mdepub/              # Source code
+│   └── mdepub/              # Main source code
 │       ├── __init__.py
-│       └── cli.py             # Command-line interface
+│       └── cli.py           # Command-line interface
 ├── config/
-│   ├── default.yaml         # Default EPUB settings
-│   └── part_title.lua       # Lua filter for part titles
-└── documents/
-    └── example.md           # Example content
+│   └── default.yaml         # Default EPUB conversion settings
+├── assets/
+│   └── stylesheet.css       # Default EPUB styles
+├── filters/
+│   └── part-filter.lua      # Lua filter for 'Part' pages
+├── documents/
+│   ├── analysis.md          # Example content
+│   └── metadata.yaml        # Example metadata
+├── tests/                   # Test suite (in development)
+└── venv/                    # Virtual environment (created by make setup)
 ```
 
-├── Makefile                 # Build and processing commands
-├── requirements.txt         # Python dependencies
-├── setup.py                 # Package setup
-├── config/
-│   └── default.yaml       # Default conversion settings
-├── assets/
-│   └── stylesheet.css     # Default EPUB styles
-├── filters/
-│   └── part-filter.lua    # Lua filter for 'Part' pages
-├── mdepub/
-│   ├── __init__.py
-│   └── cli.py             # Main command-line script
-├── documents/
-│   ├── analysis.md
-│   └── metadata.yaml
-└── tests/                     # (Not yet implemented)
-```
+## 🔧 Troubleshooting
+
+### Common Issues and Solutions
+
+**Shell Compatibility**: The tool has been tested with both bash and fish shells. If you encounter shell-related issues, ensure your wrapper script uses bash-compatible syntax.
+
+**Missing sys Import**: If you see import errors related to `sys`, this has been fixed in the latest version. Make sure you're using the updated `cli.py`.
+
+**Output Directory Issues**: Always use the `--output-dir` argument to specify where you want the EPUB file saved. This prevents path-related issues and ensures consistent behavior.
+
+**Path Handling**: The tool correctly handles both relative and absolute paths. If you encounter path issues, try using absolute paths.
+
+### Development Notes
+
+- User-specific wrapper scripts are automatically excluded from version control via `.gitignore`
+- The tool uses proper argument parsing to handle file paths and output directories
+- All fixes maintain backward compatibility while improving reliability
 
 ## 📄 License
 
