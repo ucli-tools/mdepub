@@ -1,6 +1,9 @@
 .PHONY: help setup dev-setup test lint clean clean-all epub build rebuild install-system uninstall-system
 
-# Default target
+# Default target for ucli compatibility
+build: install-system
+
+# Help target
 help:
 	@echo "mdepub - Professional Markdown to EPUB Pipeline"
 	@echo ""
@@ -56,8 +59,6 @@ lint:
 	. venv/bin/activate && isort --check-only src/ tests/
 
 # Installation and packaging
-build: install-system
-
 rebuild: clean build
 
 install-system: setup
