@@ -62,52 +62,15 @@ lint:
 rebuild: clean build
 
 install-system: setup
-	@echo "Installing mdepub to ~/.ucli-tools/mdepub..."
-	@# Create installation directory
-	mkdir -p ~/.ucli-tools/mdepub
-	@# Copy project files (excluding venv) to permanent location
-	rsync -av --exclude='venv' . ~/.ucli-tools/mdepub/
-	@# Create fresh virtual environment in user directory
-	cd ~/.ucli-tools/mdepub && python -m venv venv
-	@# Install dependencies in the new venv
-	cd ~/.ucli-tools/mdepub && . venv/bin/activate && pip install -r requirements.txt && pip install -e .
-	@# Create system wrapper script
-	@echo '#!/bin/bash' | sudo tee /usr/local/bin/mdepub > /dev/null
-	@echo '# mdepub - System wrapper for mdepub.py' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '# Set mdepub directory (permanent installation)' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo 'MDEPUB_DIR="$$HOME/.ucli-tools/mdepub"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '# Store current working directory' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo 'ORIGINAL_CWD="$$(pwd)"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '# Convert relative paths to absolute paths' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo 'args=()' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo 'for arg in "$$@"; do' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '    # Check if argument looks like a file path (contains . or / and doesnt start with -)' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '    if [[ "$$arg" == *.* || "$$arg" == */* ]] && [[ "$$arg" != -* ]]; then' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '        # Convert to absolute path if its relative' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '        if [[ "$$arg" != /* ]]; then' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '            args+=("$$ORIGINAL_CWD/$$arg")' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '        else' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '            args+=("$$arg")' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '        fi' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '    else' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '        args+=("$$arg")' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '    fi' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo 'done' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '# Activate virtual environment and execute Python script with absolute paths' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo 'cd "$$MDEPUB_DIR"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '# Use bash explicitly for venv activation to ensure compatibility' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo 'bash -c "source venv/bin/activate && python src/mdepub/cli.py $${args[*]} --output-dir \"$$ORIGINAL_CWD\""' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@sudo chmod +x /usr/local/bin/mdepub
-	@echo "✓ mdepub installed successfully."
+	@echo "Installing mdepub with pipx..."
+	@# Install using pipx for isolated CLI tool installation
+	pipx install .
+	@echo "✓ mdepub installed successfully with pipx."
 	@echo "Run 'mdepub --help' to get started."
 
 uninstall-system:
-	@echo "Uninstalling mdepub from /usr/local/bin..."
-	sudo rm -f /usr/local/bin/mdepub
+	@echo "Uninstalling mdepub with pipx..."
+	pipx uninstall mdepub
 	@echo "✓ mdepub uninstalled."
 
 # Cleanup
