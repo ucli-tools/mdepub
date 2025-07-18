@@ -65,8 +65,12 @@ install-system: setup
 	@echo "Installing mdepub to ~/.ucli-tools/mdepub..."
 	@# Create installation directory
 	mkdir -p ~/.ucli-tools/mdepub
-	@# Copy entire project to permanent location
-	cp -r . ~/.ucli-tools/mdepub/
+	@# Copy project files (excluding venv) to permanent location
+	rsync -av --exclude='venv' . ~/.ucli-tools/mdepub/
+	@# Create fresh virtual environment in user directory
+	cd ~/.ucli-tools/mdepub && python -m venv venv
+	@# Install dependencies in the new venv
+	cd ~/.ucli-tools/mdepub && . venv/bin/activate && pip install -r requirements.txt && pip install -e .
 	@# Create system wrapper script
 	@echo '#!/bin/bash' | sudo tee /usr/local/bin/mdepub > /dev/null
 	@echo '# mdepub - System wrapper for mdepub.py' | sudo tee -a /usr/local/bin/mdepub > /dev/null
