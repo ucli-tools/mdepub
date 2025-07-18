@@ -95,7 +95,8 @@ install-system: setup
 	@echo '' | sudo tee -a /usr/local/bin/mdepub > /dev/null
 	@echo '# Activate virtual environment and execute Python script with absolute paths' | sudo tee -a /usr/local/bin/mdepub > /dev/null
 	@echo 'cd "$$MDEPUB_DIR"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
-	@echo '. venv/bin/activate && python src/mdepub/cli.py "$${args[@]}" --output-dir "$$ORIGINAL_CWD"' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo '# Use bash explicitly for venv activation to ensure compatibility' | sudo tee -a /usr/local/bin/mdepub > /dev/null
+	@echo 'bash -c "source venv/bin/activate && python src/mdepub/cli.py $${args[*]} --output-dir \"$$ORIGINAL_CWD\""' | sudo tee -a /usr/local/bin/mdepub > /dev/null
 	@sudo chmod +x /usr/local/bin/mdepub
 	@echo "✓ mdepub installed successfully."
 	@echo "Run 'mdepub --help' to get started."
